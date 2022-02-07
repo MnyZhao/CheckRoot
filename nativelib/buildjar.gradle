@@ -1,0 +1,38 @@
+def jarName = "checkRoot"
+
+task deleteOldJar(type: Delete) {
+    //删除旧包
+    delete 'libs/' + jarName + ".jar"
+}
+
+//Copy类型，请在Terminal中运行gradlew makeJar
+task makeJar(type: Copy) {
+    //设置拷贝的文件
+    from("build/intermediates/aar_main_jar/release")
+    //打进jar包后的文件目录,将classes.jar放入build/libs/目录下
+    into('libs/')
+    //要打包的jar文件
+    include('classes.jar')
+    //重命名
+    rename('classes.jar', jarName + ".jar")
+}
+
+makeJar.dependsOn(deleteOldJar, build)
+
+// 生成jar包的sourcesJar，不需要修改。
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+    archiveName = jarName + '-sources.jar'
+}
+
+
+//-encoding UTF-8  -charset UTF-8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-Xlint:unchecked"
+}
+artifacts {
+    archives sourcesJar
+//    archives javadocJar
+}
