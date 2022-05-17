@@ -180,7 +180,9 @@ static inline int checkForDangerousPropsNative() {
     FILE *p_file = popen(shell_pro.c_str(), "r");
     while (fgets(buf, BUF_SIZE, p_file) != NULL) {
         std::string s = buf;
+        s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
         if (s == "1") {
+            LOGE("ROOT_NATIVE_checkForDangerousPropsNative 检测到root ");
             return 1;
         }
         LOGE("debuggable: %s", buf);
@@ -192,6 +194,7 @@ static inline int checkForDangerousPropsNative() {
 
     while (fgets(buf, BUF_SIZE, s_file) != NULL) {
         std::string s = buf;
+        s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
         if (s == "0") {
             LOGE("ROOT_NATIVE_checkForDangerousPropsNative 检测到root ");
             return 1;
@@ -216,6 +219,7 @@ static inline int checkForRWPathsNative() {
     FILE *p_mount = popen(mount.c_str(), "r");
     while (fgets(buf, BUF_SIZE, p_mount) != NULL) {
         std::string s = buf;
+        s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
         LOGE("line: %s", s.c_str());
         std::vector<std::string> args = split(s, " ");
         for (int i = 0; i < args.size(); i++) {
@@ -293,9 +297,9 @@ static inline int checkForRootNative() {
 }
 
 static inline int isRootNative(JNIEnv *env) {
-    return detectRootManagementApps(env) ||
+    return /*detectRootManagementApps(env) ||
            detectPotentiallyDangerousApps(env) ||
-           checkForBinaryNative() ||
+           checkForBinaryNative() ||*/
            checkForDangerousPropsNative() ||
            checkForRWPathsNative() ||
            checkSuExists() ||
